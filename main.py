@@ -8,8 +8,8 @@ from datetime import date, datetime, timedelta
 import uvicorn
 from config.database import Session, engine, Base
 
-from app.routers.comment_routes import comment_router
-from app.routers.auth_routes import auth_routes
+from routers.comment_routes import comment_router
+from routers.auth_routes import auth_routes
 
 app = FastAPI()
 app.title = "Fastapi Template"
