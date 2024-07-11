@@ -1,3 +1,5 @@
+from library.date_time_format import get_current_datetime
+from library.has_password import get_password_hash
 from app.models.UserModel import User
 
 class UserService():
@@ -37,6 +39,23 @@ class UserService():
         result = self.db.query(User).filter(
             (User.user_email == user_id) |
             (User.user_name == user_id) |
-            (User.mobile_no == user_id)
+            (User.mobile_no == user_id) &
+            (User.otp_status == "A") &
+            (User.active_status == "A")
         ).first()
         return result
+    def create_user(self, user):
+        db_user = User(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            user_name=user.user_name,
+            mobile_no=user.mobile_no,
+            user_email=user.email,
+            email_verified_at=get_current_datetime(),
+            user_role=user.user_role,
+            password=get_password_hash(user.password)
+        )
+        self.db.add(db_user)
+        self.db.commit()
+        self.db.refresh(db_user)
+        return db_user
