@@ -51,10 +51,10 @@ class User(Base):
 
 
 class Login(BaseModel):
-    email: EmailStr
+    user_name: str
     password: str
     
-    @field_validator('email')
+    @field_validator('user_name')
     def check_no_sql_injection(cls, v):
         forbidden_characters = ["'", "\"", ";", "--"]
         if any(char in v for char in forbidden_characters):

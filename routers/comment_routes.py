@@ -15,6 +15,9 @@ comment_router = APIRouter()
 def get_comments() -> List[Comment]:
     db = Session()
     result = CommentService(db).get_comments(1)
+    serialized_result = jsonable_encoder(result)
+    print(serialized_result)
     if not result:
+        
         return JSONResponse(status_code=404, content={'message': "Not found"})
     return JSONResponse(status_code=200, content=jsonable_encoder(result))

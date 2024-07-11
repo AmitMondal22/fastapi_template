@@ -1,18 +1,27 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from config.database import Session
-
 from app.models import UserModel
 from library.date_time_format import get_current_datetime
-from library.has_password import get_password_hash
+from library.has_password import get_password_hash,verify_password
+
+from app.services.UserService import UserService
 
 db = Session()
 @staticmethod
 async def login(user:UserModel.Login):
     try:
-        return user.email
+        emailchecked = UserService(db).get_user(user.user_name)
+        if emailchecked is None:
+            raise ValueError("Invalid email")
+        if emailchecked.active_status == "SA":
+            if not verify_password(user.password,emailchecked.password):
+                raise ValueError("Invalid password")
+            else:
+                return emailchecked
+        else:
+            raise ValueError("Invalid email")
     except ValueError as ve:
-        raise HTTPException(status_code=400, detail=str(ve))
+        raise ValueError(ve)
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
