@@ -8,7 +8,7 @@ from datetime import date, datetime, timedelta
 import uvicorn
 from config.database import Session, engine, Base
 
-from routers.comment_routes import comment_router
+
 from routers.auth_routes import auth_routes
 
 app = FastAPI()
@@ -54,8 +54,6 @@ class CustomJSONEncoder(JSONEncoder):
 app.json_encoder = CustomJSONEncoder
 
 
-
-app.include_router(comment_router)
 app.include_router(auth_routes, prefix="/api/v1/auth", tags=["authorization"])
 
 Base.metadata.create_all(bind=engine)

@@ -10,6 +10,20 @@ from library.responce import successResponse,errorResponse
 
 auth_routes = APIRouter()
 
+
+@auth_routes.post('/register', tags=['register'])
+async def register(user:UserModel.Register):
+    try:
+        data= await UserAuthController.register(user)
+        resdata = successResponse(data, message="Register Success")
+        return JSONResponse(status_code=200, content=jsonable_encoder(resdata))
+    except HTTPException as he:
+        return JSONResponse(status_code=he.status_code, content=jsonable_encoder(errorResponse(message=he.detail)))
+    except Exception as e:
+        # Handle any other unexpected exceptions
+        return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
+    
+    
 @auth_routes.post('/login', tags=['login'])
 async def login(user:UserModel.Login):
     try:
@@ -23,14 +37,5 @@ async def login(user:UserModel.Login):
         # Handle any other unexpected exceptions
         return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
     
-@auth_routes.post('/register', tags=['register'])
-async def register(user:UserModel.Register):
-    try:
-        data= await UserAuthController.register(user)
-        resdata = successResponse(data, message="Register Success")
-        return JSONResponse(status_code=200, content=jsonable_encoder(resdata))
-    except HTTPException as he:
-        return JSONResponse(status_code=he.status_code, content=jsonable_encoder(errorResponse(message=he.detail)))
-    except Exception as e:
-        # Handle any other unexpected exceptions
-        return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
+
+# @auth_routes.post('/logout', tags=['logout'])
