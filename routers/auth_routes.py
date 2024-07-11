@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 import json
 from typing import Optional, List
@@ -10,7 +10,7 @@ from app.controllers.auth import UserAuthController
 from app.models import UserModel
 
 from library.responce import successResponse,errorResponse
-from library.ObjectEncoder import ObjectEncoder
+
 
 auth_routes = APIRouter()
 
@@ -20,11 +20,12 @@ async def login(user:UserModel.Login):
         data= await UserAuthController.login(user)
         resdata = successResponse(data, message="Login Success")
         return JSONResponse(status_code=200, content=jsonable_encoder(resdata))
-    except ValueError as ve:
-        errordata = errorResponse(message="Validation Error",data=ve)
-        raise JSONResponse(status_code=400, content=errordata)
+    except HTTPException as he:
+        # Handle HTTPException raised from UserAuthController.login
+        return JSONResponse(status_code=he.status_code, content=jsonable_encoder(errorResponse(message=he.detail)))
     except Exception as e:
-        raise JSONResponse(status_code=500, content="Internal server error")
+        # Handle any other unexpected exceptions
+        return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
     
 @auth_routes.post('/register', tags=['register'])
 async def register(user:UserModel.Register):

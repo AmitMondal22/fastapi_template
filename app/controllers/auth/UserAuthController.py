@@ -21,7 +21,7 @@ async def login(user:UserModel.Login):
         else:
             raise ValueError("Invalid email")
     except ValueError as ve:
-        raise ValueError(ve)
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     
