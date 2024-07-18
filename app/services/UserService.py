@@ -36,13 +36,15 @@ class UserService():
     # this db table all column select
     
     def get_user(self, user_id):
-        result = self.db.query(User).filter(
-            (User.user_email == user_id) |
+        query = self.db.query(User).filter(
+            ((User.user_email == user_id) |
             (User.user_name == user_id) |
-            (User.mobile_no == user_id) &
+            (User.mobile_no == user_id)) &
             (User.otp_status == "A") &
             (User.active_status == "A")
-        ).first()
+        )
+        print(str(query))
+        result=query.first()
         return result
     def create_user(self, user):
         db_user = User(

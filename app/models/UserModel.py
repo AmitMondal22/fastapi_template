@@ -55,10 +55,10 @@ class Login(BaseModel):
     password: str
     
     @field_validator('user_name')
-    def check_no_sql_injection(cls, v):
-        forbidden_characters = ["'", "\"", ";", "--"]
-        if any(char in v for char in forbidden_characters):
-            raise ValueError("Invalid input")
+    def validate_username(cls, v):
+        # Allow alphanumeric characters, underscores, @, and .
+        if not re.match(r'^[\w.@]+$', v):
+            raise ValueError('Invalid username format')
         return v
 
 

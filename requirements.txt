@@ -4,3 +4,4 @@ uvicorn[standard]
 passlib[bcrypt]
 python-jose
 mysql-connector-python
+bcrypt

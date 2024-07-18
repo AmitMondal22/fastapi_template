@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from config.database import Session
 from library.has_password import verify_password
+from library.jwt_token import create_access_token
 
 from app.models import UserModel
 
@@ -11,13 +12,15 @@ db = Session()
 async def login(user:UserModel.Login):
     try:
         emailchecked = UserService(db).get_user(user.user_name)
+        print(emailchecked)
         if emailchecked is None:
             raise ValueError("Invalid email")
-        if emailchecked.active_status == "SA":
+        if emailchecked.user_role.name == "SA":
             if not verify_password(user.password,emailchecked.password):
                 raise ValueError("Invalid password")
             else:
-                return emailchecked
+                access_token = create_access_token(data={"sub": emailchecked})
+                return {"user_data":emailchecked,"token":access_token}
         else:
             raise ValueError("Invalid email")
     except ValueError as ve:

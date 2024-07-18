@@ -1,22 +1,16 @@
 from jose import jwt,ExpiredSignatureError
-from fastapi import Request, status, HTTPException,Depends
+from fastapi import Request, status, HTTPException
 from datetime import datetime, timedelta
 from config.JWT_config import SECRET_KEY,ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM
-from fastapi.security import HTTPBearer
 
-
-
-security = HTTPBearer()
 
 
 def create_access_token(data: dict):
     try:
         to_encode = data.copy()
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        
         # Ensure subject is converted to a string if necessary
         to_encode["sub"] = str(to_encode["sub"])
-
         to_encode.update({"exp": datetime.utcnow() + access_token_expires})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt

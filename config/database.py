@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 database_username = 'root'
 database_password = 'root'
 database_ip       = 'localhost'  # Assuming your database is running locally
-database_name     = 'fastapitest'
+database_name     = 'street_light_monitoring_systems'
 database_port     = 3306
 
 # Use proper string formatting
