@@ -1,25 +1,30 @@
-from fastapi import Request, HTTPException
-from starlette.middleware.base import BaseHTTPMiddleware
-
-from config.JWT_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-
+from fastapi import Request, HTTPException,status
 from library.jwt_token import verify_token
 
 
-class JWTMiddleware(BaseHTTPMiddleware):
-    async def superAdminMW(self, request: Request, call_next):
-        if "authorization" not in request.headers:
-            raise HTTPException(status_code=403, detail="Authorization header missing")
 
-        token = request.headers["authorization"].split("Bearer ")[1]
-        if not token:
-            raise HTTPException(status_code=403, detail="Token missing")
+async def superAdminMW(request: Request):
+    try:
+        authorization: str = request.headers.get("Authorization")
+        if not authorization:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authorization header not provided",
+            )
         
-        decoded_token = verify_token(token)
-        print(decoded_token.encode)
-        if not decoded_token:
-            raise HTTPException(status_code=403, detail="Invalid token")
-        
-        request.state.user = decoded_token
-        response = await call_next(request)
-        return response
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication scheme",
+            )
+        userdata_list = await verify_token(token)
+        # print(userdata_list['user_name'])
+        # Check user_type and set user_data in request state
+        request.state.user = userdata_list
+            
+    
+
+    except HTTPException:
+        raise  # Re-raise HTTPException to propagate the error response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error MW")

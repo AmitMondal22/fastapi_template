@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,Depends,Request
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
@@ -8,15 +8,20 @@ from app.controllers.auper_admin import ClientController
 
 from schemas.superadmin import ClientSchemas
 
+from app.middleware.auth import superAdminMW
+
 
 superadmin_routes = APIRouter()
 
 
 
-@superadmin_routes.post('/client/add', tags=['superadmin_client'])
-async def add_client(params:ClientSchemas.AddSuperAdminClient):
+@superadmin_routes.post('/client/add',dependencies=[Depends(superAdminMW)])
+async def add_client(request: Request,params:ClientSchemas.AddSuperAdminClient):
     try:
-        data= ClientController.add_client(params)
+        user_credentials = request.state.user
+        print(user_credentials)
+        print(">>>>>>>")
+        data= ClientController.add_client(user_credentials,params)
         resdata = successResponse(data, message="Register Success")
         return JSONResponse(status_code=200, content=jsonable_encoder(resdata))
     except HTTPException as he:

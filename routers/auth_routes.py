@@ -11,7 +11,7 @@ from library.responce import successResponse,errorResponse
 auth_routes = APIRouter()
 
 
-@auth_routes.post('/register', tags=['register'])
+@auth_routes.post('/register')
 async def register(user:UserModel.Register):
     try:
         data= await UserAuthController.register(user)
@@ -24,7 +24,7 @@ async def register(user:UserModel.Register):
         return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
     
     
-@auth_routes.post('/login', tags=['login'])
+@auth_routes.post('/login')
 async def login(user:UserModel.Login):
     try:
         data= await UserAuthController.login(user)
@@ -37,5 +37,3 @@ async def login(user:UserModel.Login):
         # Handle any other unexpected exceptions
         return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
     
-
-# @auth_routes.post('/logout', tags=['logout'])

@@ -1,10 +1,16 @@
-async def add_client():
+from fastapi import HTTPException
+from config.database import Session
+from app.services.ClientService import ClientService
+
+db = Session()
+async def add_client(user_credentials,params):
     try:
-        data= ""
-        resdata = successResponse(data, message="Register Success")
-        return JSONResponse(status_code=200, content=jsonable_encoder(resdata))
-    except HTTPException as he:
-        return JSONResponse(status_code=he.status_code, content=jsonable_encoder(errorResponse(message=he.detail)))
+        # Create SQLAlchemy model instance
+        db_user=ClientService(db).add_client(user_credentials,params)
+        if db_user is None:
+            raise ValueError("User not created")
+        return db_user
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        # Handle any other unexpected exceptions
-        return JSONResponse(status_code=500, content=jsonable_encoder(errorResponse(message="Internal server error")))
+        raise HTTPException(status_code=500, detail="Internal server error")

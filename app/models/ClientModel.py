@@ -7,7 +7,7 @@ import enum
 import re
 
     
-class User(Base):
+class ClientModel(Base):
     __tablename__ = 'md_client'
 
     client_id = Column(Integer, primary_key=True, index=True)
